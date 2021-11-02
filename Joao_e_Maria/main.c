@@ -4,6 +4,8 @@
 
 #define MAX_LINHA 10
 #define MAX_COLUNA 40
+#define ox (MAX_COLUNA - 2)
+#define oy (MAX_LINHA - 2)
 
 typedef struct
 {
@@ -45,7 +47,7 @@ void geraNivel(tJogador jogador, tMonstro monstro, int *pCaracteres)
         caracteres[i] =  pCaracteres[i];
     }
     int parede[5] = {20, 39, 0, 9, 4};
-    int x, y, ox = MAX_COLUNA - 2, oy = MAX_LINHA - 2;
+    int x, y;
     for (y = 0; y < MAX_LINHA; y++)
     {
         for (x = 0; x < MAX_COLUNA; x++)
@@ -222,6 +224,14 @@ void andar(tJogador *jogador, tMonstro *monstro)
         monstro->monstroX = monstro->monstroX;
         break;
 
+    }
+    if (jogador->jogadorX == monstro->monstroX && jogador->jogadorY == monstro->monstroY) {
+            printf("\n\nO fantasma te alcancou na torre\n");
+    } else if (jogador->jogadorX == ox && jogador->jogadorY == oy ){//&& chaveObtida == 1) {
+            printf("\n\nVoce desceu mais um andar\n");
+            system("PAUSE");
+            jogador->dificuldade++;
+            //vitoria = 1;
     }
 }
 
