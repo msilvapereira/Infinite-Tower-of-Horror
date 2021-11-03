@@ -15,6 +15,8 @@ typedef struct
     int chaveObtida;
     int controle;
     int dificuldade;
+    int vitoria;
+    int derrota;
 } tJogador;
 
 void defineJogador(tJogador *jogador)//, char[] pnome)
@@ -25,6 +27,7 @@ void defineJogador(tJogador *jogador)//, char[] pnome)
     jogador->chaveObtida = 0;
     jogador->controle = 0;
     jogador->dificuldade = 1;
+    jogador->derrota = 0;
 }
 
 typedef struct
@@ -39,8 +42,23 @@ void defineMonstro(tMonstro *monstro)
     monstro->monstroY = (int)(MAX_LINHA * 0.8);
 }
 
-void geraNivel(tJogador jogador, tMonstro monstro, int *pCaracteres)
+typedef struct
 {
+    int chaveDefinida;
+    int chaveX;
+    int chaveY;
+} tChave;
+
+void defineChave(tChave *chave)
+{
+    chave->chaveDefinida = 0;
+    chave->chaveX = 0;
+    chave->chaveY = 0;
+}
+
+void geraNivel(tJogador jogador, tMonstro monstro, tChave *chave, int *pCaracteres)
+{
+    srand(time(NULL));
     int caracteres[7];
     for (int i = 0; i < 7; i++)
     {
@@ -48,6 +66,17 @@ void geraNivel(tJogador jogador, tMonstro monstro, int *pCaracteres)
     }
     int parede[5] = {20, 39, 0, 9, 4};
     int x, y;
+
+    if (jogador.chaveObtida == 0 && chave->chaveDefinida == 0)
+    {
+        while (chave->chaveX == parede[0] || chave->chaveX == parede[1]|| chave->chaveX == parede[2] || chave->chaveY == parede[2] || chave->chaveY == parede[3])
+        {
+            chave->chaveX = (int)(rand() % MAX_COLUNA);
+            chave->chaveY = (int)(rand() % MAX_LINHA);
+        }
+        chave->chaveDefinida = 1;
+    }
+
     for (y = 0; y < MAX_LINHA; y++)
     {
         for (x = 0; x < MAX_COLUNA; x++)
@@ -74,20 +103,21 @@ void geraNivel(tJogador jogador, tMonstro monstro, int *pCaracteres)
             {
                 printf("%c", caracteres[4]);
             }
-            //  else if (x == cx && y == cy)
-            //  {
-            //      printf("%c", caracteres[5]);
-            //  }
+            else if (x == chave->chaveX && y == chave->chaveY)
+            {
+                printf("%c", caracteres[5]);
+            }
             else
             {
                 printf("%c", caracteres[6]);
             }
+
         }
         printf("\n");
     }
 }
 
-void andar(tJogador *jogador, tMonstro *monstro)
+void andar(tJogador *jogador, tMonstro *monstro, tChave *chave)
 {
     int direcao;
     scanf("%i", &jogador->controle);
@@ -225,13 +255,30 @@ void andar(tJogador *jogador, tMonstro *monstro)
         break;
 
     }
-    if (jogador->jogadorX == monstro->monstroX && jogador->jogadorY == monstro->monstroY) {
-            printf("\n\nO fantasma te alcancou na torre\n");
-    } else if (jogador->jogadorX == ox && jogador->jogadorY == oy ){//&& chaveObtida == 1) {
-            printf("\n\nVoce desceu mais um andar\n");
-            system("PAUSE");
-            jogador->dificuldade++;
-            //vitoria = 1;
+
+    if (jogador->jogadorY == chave->chaveY && jogador->jogadorX == chave->chaveX)
+    {
+        jogador->chaveObtida = 1;
+        chave->chaveY = 0;
+        chave->chaveX = 0;
+    }
+
+    if (jogador->jogadorX == monstro->monstroX && jogador->jogadorY == monstro->monstroY)
+    {
+        printf("\n\nO fantasma te alcancou na torre\n");
+        jogador->derrota = 1;
+    }
+    else if (jogador->jogadorX == ox && jogador->jogadorY == oy && jogador->chaveObtida == 1)
+    {
+        printf("\n\nVoce desceu mais um andar\n");
+        system("PAUSE");
+        jogador->dificuldade++;
+        jogador->jogadorX = 1;
+        jogador->jogadorY = 1;
+        jogador->chaveObtida = 0;
+        monstro->monstroX = (int)(MAX_COLUNA * 0.4);
+        monstro->monstroY = (int)(MAX_LINHA * 0.8);
+        chave->chaveDefinida = 0;
     }
 }
 
@@ -240,16 +287,22 @@ void jogar()
     int caracteres[7] = {186, 177, 241, 207, 219, 189, 196};
     tJogador jogador;
     tMonstro monstro;
+    tChave chave;
     defineJogador(&jogador);
     defineMonstro(&monstro);
+    defineChave(&chave);
     for (;;)
     {
 
-        geraNivel(jogador, monstro, caracteres);
+        geraNivel(jogador, monstro, &chave, caracteres);
         printf("Controles: 8 (cima)\t6 (direita)\t5 (baixo)\t4 (esquerda)\n\n");
         printf("Fantasma - %c \nPlayer - %c \nChave - %c \nPorta - %c \n\n", caracteres[3], caracteres[2], caracteres[5], caracteres[4]);
         printf("Sua vez! Digite um comando:  ");
-        andar(&jogador, &monstro);
+        andar(&jogador, &monstro, &chave);
+        if(jogador.derrota == 1)
+        {
+            break;
+        }
         system("CLS");
     }
 }
