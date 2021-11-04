@@ -6,11 +6,12 @@
 #define MAX_COLUNA 40
 #define ox (MAX_COLUNA - 2)
 #define oy (MAX_LINHA - 2)
+#define TAM_NOME 100
+#define QTD_MAX_NOME 100
 
-//Define as principais caracteristicas do jogador
+// Define as principais caracteristicas do jogador
 typedef struct
 {
-    //char nome[50];
     int jogadorX;
     int jogadorY;
     int chaveObtida;
@@ -20,10 +21,9 @@ typedef struct
     int derrota;
 } tJogador;
 
-//Adiciona um valor padrao ao endereco da memoria de quando o jogador e instanciado
-void defineJogador(tJogador *jogador) //, char[] pnome)
+// Adiciona um valor padrao ao endereco da memoria de quando o jogador e instanciado
+void defineJogador(tJogador *jogador)
 {
-    //jogador.nome[] = pnome[];
     jogador->jogadorX = 1;
     jogador->jogadorY = 1;
     jogador->chaveObtida = 0;
@@ -32,21 +32,21 @@ void defineJogador(tJogador *jogador) //, char[] pnome)
     jogador->derrota = 0;
 }
 
-//Define as caracteristicas gerais do monstro
+// Define as caracteristicas gerais do monstro
 typedef struct
 {
     int monstroX;
     int monstroY;
 } tMonstro;
 
-//Adiciona um valor padrao ao endereco da memoria de quando o monstro e instanciado
+// Adiciona um valor padrao ao endereco da memoria de quando o monstro e instanciado
 void defineMonstro(tMonstro *monstro)
 {
     monstro->monstroX = (int)(MAX_COLUNA * 0.4);
     monstro->monstroY = (int)(MAX_LINHA * 0.8);
 }
 
-//Define as caracteristicas gerais do jogador
+// Define as caracteristicas gerais do jogador
 typedef struct
 {
     int chaveDefinida;
@@ -54,7 +54,7 @@ typedef struct
     int chaveY;
 } tChave;
 
-//Adiciona um valor padrao ao endereco da memoria de quando a chave e instanciada
+// Adiciona um valor padrao ao endereco da memoria de quando a chave e instanciada
 void defineChave(tChave *chave)
 {
     chave->chaveDefinida = 0;
@@ -62,12 +62,58 @@ void defineChave(tChave *chave)
     chave->chaveY = 0;
 }
 
+// Define as caracteristicas da struct nome
+typedef struct
+{
+    char jogador[TAM_NOME];
+    char NomeJogador[TAM_NOME];
+    int nome;
+} tNome;
+
+// Define valores padroes a struct nome
+void limpartNome(tNome *p)
+{
+    for (int i = 0; i < TAM_NOME; i++)
+    {
+        p->jogador[i] = '\0';
+        p->NomeJogador[i] = '\0';
+    }
+    p->nome = 0;
+}
+
+// Funcao que ira receber o nome do jogador
+void configurar()
+{
+    // gerado a struct novoNome e logo em seguido "limpada"
+    tNome novoNome;
+    FILE *arq;
+    limpartNome(&novoNome);
+
+    printf("\nIdentificacao ");
+    printf("\n\nDigite o nome do Jogador: \n");
+
+    // Limpado o teclado e recebe o nome do jogador
+    fflush(stdin);
+    fgets(novoNome.jogador, TAM_NOME, stdin);
+
+    printf("\nBem-Vindo! %s", &novoNome.jogador);
+
+    arq = fopen("jogdador.prog", "ab");
+
+    {
+        fwrite(&novoNome, sizeof(tNome), 1, arq);
+
+        fclose(arq);
+    }
+}
+
+// funcao que ira desenhar o mapa do jogo
 void geraNivel(tJogador jogador, tMonstro monstro, tChave *chave, int *pCaracteres)
 {
     srand(time(NULL)); //linha necessaria para gerar valores aleatorios baseado no tempo
 
-    /* 
-    Declaracao de variaveis locais da funcao onde: 
+    /*
+    Declaracao de variaveis locais da funcao onde:
         vetor caracteres sera usado para desenhar o mapa do jogo (onde os caracteres sao recebidos de outra função);
         vetor parede sera usado tambem para auxilio no desenho do mapa;
         e variaveis x e y que serão utilizadas para os lacos de repeticao dos dois for.
@@ -81,7 +127,7 @@ void geraNivel(tJogador jogador, tMonstro monstro, tChave *chave, int *pCaracter
     int x, y;
 
     /*
-    Sequencia que gera a posicao da chave (de maneira aleatoria), 
+    Sequencia que gera a posicao da chave (de maneira aleatoria),
     onde antes e checado se o jogador ja nao pegou a chave e se ela ja nao foi definida antes
 
     OBS: a chave nao sera gerada dentro das paredes do jogo.
@@ -149,7 +195,7 @@ void andar(tJogador *jogador, tMonstro *monstro, tChave *chave)
     setbuf(stdin, NULL);
 
     /*
-        switch-case que ira analisar o comando enviado pelo jogador onde e especificado que apenas recebera pelos numeros 8, 5, 4, 6 e caso 
+        switch-case que ira analisar o comando enviado pelo jogador onde e especificado que apenas recebera pelos numeros 8, 5, 4, 6 e caso
         contrario sera informado ao jogador.
     */
     switch (jogador->controle)
@@ -356,6 +402,9 @@ void jogar()
 
 int main()
 {
+    configurar();
+    system("PAUSE");
+    system("CLS");
     jogar();
     return 0;
 }
