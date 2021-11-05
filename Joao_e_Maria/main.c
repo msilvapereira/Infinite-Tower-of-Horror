@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <ctype.h>
 
 #define MAX_LINHA 10
 #define MAX_COLUNA 40
@@ -81,6 +82,7 @@ void limpartNome(tNome *p)
     p->nome = 0;
 }
 
+// menu que sera executado
 int menu()
 {
     char opcao = '0';
@@ -93,6 +95,7 @@ int menu()
     printf("\n[ 4 ] - Sair\n");
 
     fflush(stdin);
+    // pegar a opcao desejada do usuario
     opcao = getchar();
 
     switch (opcao)
@@ -249,7 +252,7 @@ void andar(tJogador *jogador, tMonstro *monstro, tChave *chave)
 
     do
     {
-        switch (getch())
+        switch (tolower(getch()))
         {
         case 'w':
             jogador->jogadorY -= 1;
