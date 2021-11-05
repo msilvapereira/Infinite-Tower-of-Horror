@@ -46,7 +46,51 @@ void defineNivel(tNivel *nivel)
     nivel->parede[4] = 4;
 }
 
+<<<<<<< Updated upstream
 void geraChave(tNivel *nivel)
+=======
+int menu()
+{
+    int opcao;
+
+    system("cls");
+    printf("\n[ 1 ] - Jogar");
+    printf("\n[ 2 ] - Como jogar");
+    printf("\n[ 3 ] - Sair\n");
+
+    scanf("%d", &opcao);
+
+    switch (opcao)
+    {
+    case 1:
+        jogar();
+        break;
+    case 2:
+        instrucoes();
+        break;
+    case 3:
+        return 0;
+    default:
+        printf("\nOpcao invalida");
+        system("PAUSE");
+    }
+
+    return 1;
+}
+
+void instrucoes()
+{
+    system("cls");
+    printf("\nPara jogar voce deve selecionar a opcao Jogar no menu, e após isso ira comecar o jogo onde...");
+    printf("\nVoce enquanto jogador deve fugir do monstro, pegar a chave e passar pela saida para alcancar o proximo nivel.");
+    printf("\nSeus controles para movimentacao consistem nas telcas 8, 4, 5, 6 onde respectivamente o movimenta para cima, esquerda,  baixo e direita\n");
+    system("PAUSE");
+    system("cls");
+}
+
+// Funcao que ira receber o nome do jogador
+void configurar()
+>>>>>>> Stashed changes
 {
     while (nivel->chaveX == nivel->parede[0] || nivel->chaveX == nivel->parede[1] || nivel->chaveX == nivel->parede[2] || nivel->chaveY == nivel->parede[2] || nivel->chaveY == nivel->parede[3])
     {
@@ -232,6 +276,7 @@ int main()
             }
             break;
 
+<<<<<<< Updated upstream
         case 1:
             nivel->monstroY += nivel->dificuldade;
             if (nivel->monstroY >= MAX_LINHA - 1)
@@ -239,6 +284,22 @@ int main()
                 nivel->monstroY = MAX_LINHA - 2;
             }
             break;
+=======
+void jogar()
+{
+    instrucoes();
+    /* definicao de variaveis e structs
+        definido os caracteres baseados em seus valores ascii
+        gerado a struct do monstro, jogador e chave onde logo apos eles terao suas variaveis definidas aos valores padrao do jogo
+    */
+    int caracteres[7] = {186, 177, 241, 207, 219, 189, 196};
+    tJogador jogador;
+    tMonstro monstro;
+    tChave chave;
+    defineJogador(&jogador);
+    defineMonstro(&monstro);
+    defineChave(&chave);
+>>>>>>> Stashed changes
 
         case 2:
             nivel->monstroX -= nivel->dificuldade;
@@ -263,7 +324,12 @@ int main()
 
         if (nivel->jogadorX == nivel->monstroX && nivel->jogadorY == nivel->monstroY)
         {
+<<<<<<< Updated upstream
             printf("\n\nO fantasma te alcancou na torre\n");
+=======
+            printf("\nVoce perdeu, tente da proxima vez!!\n");
+            system("PAUSE");
+>>>>>>> Stashed changes
             break;
         }
         else if (nivel->jogadorX == nivel->ox && nivel->jogadorY == nivel->oy && nivel->chaveObtida == 1)
@@ -275,5 +341,12 @@ int main()
         }
     }
     system("PAUSE");
+<<<<<<< Updated upstream
+=======
+    system("CLS");
+    while (menu())
+    {
+    }
+>>>>>>> Stashed changes
     return 0;
 }
