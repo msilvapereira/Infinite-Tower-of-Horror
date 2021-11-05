@@ -83,39 +83,59 @@ void limpartNome(tNome *p)
 
 int menu()
 {
-    int opcao;
+    char opcao = '0';
 
     system("cls");
+    printf("\n\n======= INFINITE TOWER OF HORROR =======\n\n");
     printf("\n[ 1 ] - Jogar");
     printf("\n[ 2 ] - Como jogar");
-    printf("\n[ 3 ] - Sair\n");
+    printf("\n[ 3 ] - Bestiario");
+    printf("\n[ 4 ] - Sair\n");
 
-    scanf("%d", &opcao);
+    fflush(stdin);
+    opcao = getchar();
 
     switch (opcao)
     {
-    case 1:
+    case '1':
         jogar();
         break;
-    case 2:
-        instrucoes();
+    case '2':
+        comoJogar();
         break;
-    case 3:
+    case '3':
+        bestiario();
+        break;
+    case '4':
         return 0;
     default:
-        printf("\nOpcao invalida");
+        printf("\nOpcao invalida\n");
         system("PAUSE");
     }
 
     return 1;
 }
 
-void instrucoes()
+// informacoes dos monstros do jogo
+void bestiario()
 {
     system("cls");
-    printf("\nPara jogar voce deve selecionar a opcao Jogar no menu, e após isso ira comecar o jogo onde...");
-    printf("\nVoce enquanto jogador deve fugir do monstro, pegar a chave e passar pela saida para alcancar o proximo nivel.");
-    printf("\nSeus controles para movimentacao consistem nas telcas 8, 4, 5, 6 onde respectivamente o movimenta para cima, esquerda,  baixo e direita\n");
+    printf("\n\n======= ======= ======= BESTIARIO\n\n");
+    printf("\n1o Fantasma");
+    printf("\n1.1 Wraith: e um fantasma que atravessa paredes e costuma se irritar quando se sente enganado.");
+
+    printf("\n");
+    system("PAUSE");
+}
+
+// instruções de como é jogado o jogo
+void comoJogar()
+{
+    system("cls");
+    printf("\n\nPara jogar voce deve selecionar a opcao Jogar no menu, e apos isso ira comecar o jogo onde...");
+    printf("\n\nVoce enquanto jogador deve fugir do monstro, pegar a chave e passar pela saida para alcancar o proximo nivel.");
+    printf("\n\nSeus controles para movimentacao consistem nas telcas W, A, S, D onde respectivamente o movimenta para cima, esquerda,  baixo e direita\n\n");
+
     system("PAUSE");
     system("cls");
 }
@@ -139,11 +159,9 @@ void configurar()
 
     arq = fopen("jogdador.prog", "ab");
 
-    {
-        fwrite(&novoNome, sizeof(tNome), 1, arq);
+    fwrite(&novoNome, sizeof(tNome), 1, arq);
 
-        fclose(arq);
-    }
+    fclose(arq);
 }
 
 // funcao que ira desenhar o mapa do jogo
@@ -229,74 +247,69 @@ void andar(tJogador *jogador, tMonstro *monstro, tChave *chave)
     // variavel direcao que sera usada para guiar o monstro caso ele veja o jogador (mesmo X ou mesmo Y)
     int direcao;
 
-    // receber comando do jogador onde ele ira se movimentar (recebendo diretamente no endereco da memoria do jogador)
-    scanf("%i", &jogador->controle);
-    setbuf(stdin, NULL);
-
-    /*
-        switch-case que ira analisar o comando enviado pelo jogador onde e especificado que apenas recebera pelos numeros 8, 5, 4, 6 e caso
-        contrario sera informado ao jogador.
-    */
-    switch (jogador->controle)
+    do
     {
-    case 8:
-        jogador->jogadorY -= 1;
-        if (jogador->jogadorY < 1)
+        switch (getch())
         {
-            jogador->jogadorY = 1;
-        }
-        else if (jogador->jogadorX == 20)
-        {
-            jogador->jogadorY = 4;
-        }
-        break;
-
-    case 5:
-        jogador->jogadorY += 1;
-        if (jogador->jogadorY >= MAX_LINHA - 1)
-        {
-            jogador->jogadorY = MAX_LINHA - 2;
-        }
-        else if (jogador->jogadorX == 20)
-        {
-            jogador->jogadorY = 4;
-        }
-        break;
-
-    case 4:
-        jogador->jogadorX -= 1;
-        if (jogador->jogadorX < 1)
-        {
-            jogador->jogadorX = 1;
-        }
-        else if (jogador->jogadorY != 4)
-        {
-            if (jogador->jogadorX == 20)
+        case 'w':
+            jogador->jogadorY -= 1;
+            if (jogador->jogadorY < 1)
             {
-                jogador->jogadorX = 21;
+                jogador->jogadorY = 1;
             }
-        }
-        break;
-
-    case 6:
-        jogador->jogadorX += 1;
-        if (jogador->jogadorX >= MAX_COLUNA - 1)
-        {
-            jogador->jogadorX = MAX_COLUNA - 2;
-        }
-        else if (jogador->jogadorY != 4)
-        {
-            if (jogador->jogadorX == 20)
+            else if (jogador->jogadorX == 20)
             {
-                jogador->jogadorX = 19;
+                jogador->jogadorY = 4;
             }
-        }
-        break;
+            break;
 
-    default:
-        printf("\nComando invalido!\n");
-        system("PAUSE");
-    }
+        case 's':
+            jogador->jogadorY += 1;
+            if (jogador->jogadorY >= MAX_LINHA - 1)
+            {
+                jogador->jogadorY = MAX_LINHA - 2;
+            }
+            else if (jogador->jogadorX == 20)
+            {
+                jogador->jogadorY = 4;
+            }
+            break;
+
+        case 'a':
+            jogador->jogadorX -= 1;
+            if (jogador->jogadorX < 1)
+            {
+                jogador->jogadorX = 1;
+            }
+            else if (jogador->jogadorY != 4)
+            {
+                if (jogador->jogadorX == 20)
+                {
+                    jogador->jogadorX = 21;
+                }
+            }
+            break;
+
+        case 'd':
+            jogador->jogadorX += 1;
+            if (jogador->jogadorX >= MAX_COLUNA - 1)
+            {
+                jogador->jogadorX = MAX_COLUNA - 2;
+            }
+            else if (jogador->jogadorY != 4)
+            {
+                if (jogador->jogadorX == 20)
+                {
+                    jogador->jogadorX = 19;
+                }
+            }
+            break;
+
+        default:
+            printf("\nComando invalido!\n");
+            system("PAUSE");
+        }
+    } while (kbhit());
 
     // linha de ifs que ira analisar se o jogador se encontra na visao do monstro
     if (jogador->jogadorY == monstro->monstroY)
@@ -403,7 +416,7 @@ void andar(tJogador *jogador, tMonstro *monstro, tChave *chave)
 
 void jogar()
 {
-    instrucoes();
+    comoJogar();
     /* definicao de variaveis e structs
         definido os caracteres baseados em seus valores ascii
         gerado a struct do monstro, jogador e chave onde logo apos eles terao suas variaveis definidas aos valores padrao do jogo
@@ -423,7 +436,7 @@ void jogar()
         geraNivel(jogador, monstro, &chave, caracteres);
 
         // explicacao dos controles do jogo
-        printf("Controles: 8 (cima)\t6 (direita)\t5 (baixo)\t4 (esquerda)\n\n");
+        printf("Controles: W (cima)\tD (direita)\tS (baixo)\tA (esquerda)\n\n");
         // pequena linha onde demonstra o que cada caracter usado sera no jogo
         printf("Fantasma - %c \nPlayer - %c \nChave - %c \nPorta - %c \n\n", caracteres[3], caracteres[2], caracteres[5], caracteres[4]);
 
