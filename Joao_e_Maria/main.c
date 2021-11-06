@@ -8,7 +8,6 @@
 #define ox (MAX_COLUNA - 2)
 #define oy (MAX_LINHA - 2)
 #define TAM_NOME 100
-#define QTD_MAX_NOME 100
 
 // Define as principais caracteristicas do jogador
 typedef struct
@@ -67,8 +66,7 @@ void defineChave(tChave *chave)
 typedef struct
 {
     char jogador[TAM_NOME];
-    char NomeJogador[TAM_NOME];
-    int nome;
+    char pontuacao;
 } tNome;
 
 // Define valores padroes a struct nome
@@ -77,9 +75,8 @@ void limpartNome(tNome *p)
     for (int i = 0; i < TAM_NOME; i++)
     {
         p->jogador[i] = '\0';
-        p->NomeJogador[i] = '\0';
     }
-    p->nome = 0;
+    p->pontuacao = 0;
 }
 
 // menu que sera executado
@@ -126,8 +123,8 @@ void bestiario()
     printf("\n\n======= ======= ======= BESTIARIO\n\n");
     printf("\n1o Fantasma");
     printf("\n1.1 Wraith: e um fantasma que atravessa paredes e costuma se irritar quando se sente enganado.");
+    printf("\n\n");
 
-    printf("\n");
     system("PAUSE");
 }
 
@@ -137,32 +134,43 @@ void comoJogar()
     system("cls");
     printf("\n\nPara jogar voce deve selecionar a opcao Jogar no menu, e apos isso ira comecar o jogo onde...");
     printf("\n\nVoce enquanto jogador deve fugir do monstro, pegar a chave e passar pela saida para alcancar o proximo nivel.");
-    printf("\n\nSeus controles para movimentacao consistem nas telcas W, A, S, D onde respectivamente o movimenta para cima, esquerda,  baixo e direita\n\n");
+    printf("\n\nSeus controles para movimentacao consistem nas telcas W, A, S, D onde respectivamente o movimenta para cima, esquerda,  baixo e direita");
+    printf("\n\n");
 
     system("PAUSE");
     system("cls");
 }
 
-// Funcao que ira receber o nome do jogador
-void configurar()
+// Funcao que ira receber o nome do jogador e a pontuacao para salvar
+void nomeJogador(tJogador *jogador)
 {
     // gerado a struct novoNome e logo em seguido "limpada"
     tNome novoNome;
     FILE *arq;
     limpartNome(&novoNome);
 
+    system("cls");
     printf("\nIdentificacao ");
-    printf("\n\nDigite o nome do Jogador: \n");
+    printf("\n\nDigite o nome do Jogador para salvar sua pontuacao: ");
 
     // Limpado o teclado e recebe o nome do jogador
     fflush(stdin);
     fgets(novoNome.jogador, TAM_NOME, stdin);
 
-    printf("\nBem-Vindo! %s", &novoNome.jogador);
+    printf("\n\nSalvo no arquivo jogador.prog");
 
-    arq = fopen("jogdador.prog", "ab");
+    novoNome.pontuacao = jogador->dificuldade;
 
-    fwrite(&novoNome, sizeof(tNome), 1, arq);
+    printf("\nTente na proxima %s!", &novoNome.jogador);
+
+    arq = fopen("jogador.prog", "ab");
+
+    // digita no arquivo
+    fprintf(arq, "\nPontuacao: ");
+    fprintf(arq, "%d \n", novoNome.pontuacao);
+    fprintf(arq, "Nome:  ");
+
+    fwrite(&novoNome, 50, 2, arq);
 
     fclose(arq);
 }
@@ -242,6 +250,7 @@ void geraNivel(tJogador jogador, tMonstro monstro, tChave *chave, int *pCaracter
     }
 }
 
+// funcao que controla o movimento do jogador, do monstro e a condicao de vitoria e derrota
 void andar(tJogador *jogador, tMonstro *monstro, tChave *chave)
 {
     // linha necessaria para gerar valores aleatorios baseado no tempo
@@ -417,6 +426,7 @@ void andar(tJogador *jogador, tMonstro *monstro, tChave *chave)
     }
 }
 
+// inicia o jogo por inteiro
 void jogar()
 {
     comoJogar();
@@ -452,6 +462,7 @@ void jogar()
         {
             printf("\nVoce perdeu, tente da proxima vez!!\n");
             system("PAUSE");
+            nomeJogador(&jogador);
             break;
         }
         system("CLS");
@@ -460,9 +471,6 @@ void jogar()
 
 int main()
 {
-    configurar();
-    system("PAUSE");
-    system("CLS");
     while (menu())
     {
     }
