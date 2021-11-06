@@ -9,7 +9,12 @@
 #define oy (MAX_LINHA - 2)
 #define TAM_NOME 100
 
-// Define as principais caracteristicas do jogador
+/* Autores:
+    Maria Eduarda da Silva Pereira
+    João Ulisses Arruda Souza
+*/
+
+// Define as principais caracteristicas do jogador //
 typedef struct
 {
     int jogadorX;
@@ -21,7 +26,7 @@ typedef struct
     int derrota;
 } tJogador;
 
-// Adiciona um valor padrao ao endereco da memoria de quando o jogador e instanciado
+// Adiciona um valor padrao ao endereco da memoria de quando o jogador e instanciado //
 void defineJogador(tJogador *jogador)
 {
     jogador->jogadorX = 1;
@@ -32,21 +37,21 @@ void defineJogador(tJogador *jogador)
     jogador->derrota = 0;
 }
 
-// Define as caracteristicas gerais do monstro
+// Define as caracteristicas gerais do monstro //
 typedef struct
 {
     int monstroX;
     int monstroY;
 } tMonstro;
 
-// Adiciona um valor padrao ao endereco da memoria de quando o monstro e instanciado
+// Adiciona um valor padrao ao endereco da memoria de quando o monstro e instanciado //
 void defineMonstro(tMonstro *monstro)
 {
     monstro->monstroX = (int)(MAX_COLUNA * 0.4);
     monstro->monstroY = (int)(MAX_LINHA * 0.8);
 }
 
-// Define as caracteristicas gerais do jogador
+// Define as caracteristicas gerais do jogador //
 typedef struct
 {
     int chaveDefinida;
@@ -54,7 +59,7 @@ typedef struct
     int chaveY;
 } tChave;
 
-// Adiciona um valor padrao ao endereco da memoria de quando a chave e instanciada
+// Adiciona um valor padrao ao endereco da memoria de quando a chave e instanciada //
 void defineChave(tChave *chave)
 {
     chave->chaveDefinida = 0;
@@ -62,14 +67,14 @@ void defineChave(tChave *chave)
     chave->chaveY = 0;
 }
 
-// Define as caracteristicas da struct nome
+// Define as caracteristicas da struct nome //
 typedef struct
 {
     char jogador[TAM_NOME];
     char pontuacao;
 } tNome;
 
-// Define valores padroes a struct nome
+// Define valores padroes a struct nome //
 void limpartNome(tNome *p)
 {
     for (int i = 0; i < TAM_NOME; i++)
@@ -79,7 +84,7 @@ void limpartNome(tNome *p)
     p->pontuacao = 0;
 }
 
-// menu que sera executado
+// menu que sera executado //
 int menu()
 {
     char opcao = '0';
@@ -116,7 +121,7 @@ int menu()
     return 1;
 }
 
-// informacoes dos monstros do jogo
+// informacoes dos monstros do jogo //
 void bestiario()
 {
     system("cls");
@@ -128,7 +133,7 @@ void bestiario()
     system("PAUSE");
 }
 
-// instruções de como é jogado o jogo
+// instruções de como é jogado o jogo //
 void comoJogar()
 {
     system("cls");
@@ -141,41 +146,50 @@ void comoJogar()
     system("cls");
 }
 
-// Funcao que ira receber o nome do jogador e a pontuacao para salvar
-void nomeJogador(tJogador *jogador)
+// inicia o jogo por inteiro //
+void jogar()
 {
-    // gerado a struct novoNome e logo em seguido "limpada"
-    tNome novoNome;
-    FILE *arq;
-    limpartNome(&novoNome);
+    comoJogar();
+    /* definicao de variaveis e structs
+        definido os caracteres baseados em seus valores ascii
+        gerado a struct do monstro, jogador e chave onde logo apos eles terao suas variaveis definidas aos valores padrao do jogo
+    */
+    int caracteres[7] = {186, 177, 241, 207, 219, 189, 196};
+    tJogador jogador;
+    tMonstro monstro;
+    tChave chave;
+    defineJogador(&jogador);
+    defineMonstro(&monstro);
+    defineChave(&chave);
 
-    system("cls");
-    printf("\nIdentificacao ");
-    printf("\n\nDigite o nome do Jogador para salvar sua pontuacao: ");
+    // repeticao infinita para o jogo continuar rodando, tendo seu motivo de quebra a derrota do jogador
+    for (;;)
+    {
+        // gerado o nivel passando como parametro o jogador, monstro, chave (por referencia de memoria) e caracteres
+        geraNivel(jogador, monstro, &chave, caracteres);
 
-    // Limpado o teclado e recebe o nome do jogador
-    fflush(stdin);
-    fgets(novoNome.jogador, TAM_NOME, stdin);
+        // explicacao dos controles do jogo
+        printf("Controles: W (cima)\tD (direita)\tS (baixo)\tA (esquerda)\n\n");
+        // pequena linha onde demonstra o que cada caracter usado sera no jogo
+        printf("Fantasma - %c \nPlayer - %c \nChave - %c \nPorta - %c \n\n", caracteres[3], caracteres[2], caracteres[5], caracteres[4]);
 
-    printf("\n\nSalvo no arquivo jogador.prog");
+        // execucao da funcao onde o jogador ira andar, e seus parametros serao todos passados por referencia pois eles vao ter uma modificao que sera usada em outras funcoes
+        printf("Sua vez! Digite um comando:  ");
+        andar(&jogador, &monstro, &chave);
 
-    novoNome.pontuacao = jogador->dificuldade;
-
-    printf("\nTente na proxima %s!", &novoNome.jogador);
-
-    arq = fopen("jogador.prog", "ab");
-
-    // digita no arquivo
-    fprintf(arq, "\nPontuacao: ");
-    fprintf(arq, "%d \n", novoNome.pontuacao);
-    fprintf(arq, "Nome:  ");
-
-    fwrite(&novoNome, 50, 2, arq);
-
-    fclose(arq);
+        // estrutura if que ira verificar se a struct do jogador recebeu o valor de 1 decretando assim a derrota do jogador
+        if (jogador.derrota == 1)
+        {
+            printf("\nVoce perdeu, tente da proxima vez!!\n");
+            system("PAUSE");
+            nomeJogador(&jogador);
+            break;
+        }
+        system("CLS");
+    }
 }
 
-// funcao que ira desenhar o mapa do jogo
+// funcao que ira desenhar o mapa do jogo /
 void geraNivel(tJogador jogador, tMonstro monstro, tChave *chave, int *pCaracteres)
 {
     srand(time(NULL)); //linha necessaria para gerar valores aleatorios baseado no tempo
@@ -250,7 +264,7 @@ void geraNivel(tJogador jogador, tMonstro monstro, tChave *chave, int *pCaracter
     }
 }
 
-// funcao que controla o movimento do jogador, do monstro e a condicao de vitoria e derrota
+// funcao que controla o movimento do jogador, do monstro e a condicao de vitoria e derrota /
 void andar(tJogador *jogador, tMonstro *monstro, tChave *chave)
 {
     // linha necessaria para gerar valores aleatorios baseado no tempo
@@ -426,47 +440,39 @@ void andar(tJogador *jogador, tMonstro *monstro, tChave *chave)
     }
 }
 
-// inicia o jogo por inteiro
-void jogar()
+// Funcao que ira receber o nome do jogador e a pontuacao para salvar /
+void nomeJogador(tJogador *jogador)
 {
-    comoJogar();
-    /* definicao de variaveis e structs
-        definido os caracteres baseados em seus valores ascii
-        gerado a struct do monstro, jogador e chave onde logo apos eles terao suas variaveis definidas aos valores padrao do jogo
-    */
-    int caracteres[7] = {186, 177, 241, 207, 219, 189, 196};
-    tJogador jogador;
-    tMonstro monstro;
-    tChave chave;
-    defineJogador(&jogador);
-    defineMonstro(&monstro);
-    defineChave(&chave);
+    // gerado a struct novoNome e logo em seguido "limpada"
+    tNome novoNome;
+    FILE *arq;
+    limpartNome(&novoNome);
 
-    // repeticao infinita para o jogo continuar rodando, tendo seu motivo de quebra a derrota do jogador
-    for (;;)
-    {
-        // gerado o nivel passando como parametro o jogador, monstro, chave (por referencia de memoria) e caracteres
-        geraNivel(jogador, monstro, &chave, caracteres);
+    system("cls");
+    printf("\nIdentificacao ");
+    printf("\n\nDigite o nome do Jogador para salvar sua pontuacao: ");
 
-        // explicacao dos controles do jogo
-        printf("Controles: W (cima)\tD (direita)\tS (baixo)\tA (esquerda)\n\n");
-        // pequena linha onde demonstra o que cada caracter usado sera no jogo
-        printf("Fantasma - %c \nPlayer - %c \nChave - %c \nPorta - %c \n\n", caracteres[3], caracteres[2], caracteres[5], caracteres[4]);
+    // Limpado o teclado e recebe o nome do jogador
+    fflush(stdin);
+    fgets(novoNome.jogador, TAM_NOME, stdin);
 
-        // execucao da funcao onde o jogador ira andar, e seus parametros serao todos passados por referencia pois eles vao ter uma modificao que sera usada em outras funcoes
-        printf("Sua vez! Digite um comando:  ");
-        andar(&jogador, &monstro, &chave);
+    printf("\n\nSalvo no arquivo jogador.prog");
 
-        // estrutura if que ira verificar se a struct do jogador recebeu o valor de 1 decretando assim a derrota do jogador
-        if (jogador.derrota == 1)
-        {
-            printf("\nVoce perdeu, tente da proxima vez!!\n");
-            system("PAUSE");
-            nomeJogador(&jogador);
-            break;
-        }
-        system("CLS");
-    }
+    novoNome.pontuacao = jogador->dificuldade;
+
+    printf("\nTente na proxima %s!", &novoNome.jogador);
+
+    arq = fopen("jogador.prog", "ab");
+
+    // digita no arquivo
+    fprintf(arq, "\nPontuacao: ");
+    fprintf(arq, "%d \n", novoNome.pontuacao);
+    fprintf(arq, "Nome:  ");
+
+    fwrite(&novoNome, 50, 2, arq);
+
+    fclose(arq);
+    system("PAUSE");
 }
 
 int main()
