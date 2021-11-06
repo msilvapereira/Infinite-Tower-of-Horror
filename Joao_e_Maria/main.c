@@ -460,7 +460,7 @@ void nomeJogador(tJogador *jogador)
 
     novoNome.pontuacao = jogador->dificuldade;
 
-    printf("\nTente na proxima %s!", &novoNome.jogador);
+    printf("\nTente na proxima %s", &novoNome.jogador);
 
     arq = fopen("jogador.prog", "ab");
 
